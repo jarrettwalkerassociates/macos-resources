@@ -35,10 +35,13 @@ addToDock "/Applications/1Password.app"
 addToDockEnd "/Applications/Privileges.app"
 
 removeFromDock "/System/Applications/Music.app"
+removeFromDock "/System/Applications/News.app"
 removeFromDock "/System/Applications/TV.app"
 removeFromDock "/System/Applications/Messages.app"
 removeFromDock "/System/Applications/FaceTime.app"
 removeFromDock "/System/Applications/FaceTime.app"
 removeFromDock "/System/Applications/Photos.app"
+removeFromDock "/Applications/Photos.app"
+removeFromDock "/System/Applications/Freeform.app"
 
 exit
