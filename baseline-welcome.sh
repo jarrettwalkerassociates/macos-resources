@@ -15,7 +15,7 @@ dialogMessage="This tool will install most of the programs and apps that you'll 
 dialogIcon="SF=play.laptopcomputer,color=blue,weight=medium"
 dialogInfoBoxContent="### Computer Name  \n{computername}  \n### Username \n{username}  \n### Serial number  \n{serialnumber}"
 dialogInfoText="This is an official tool from JWA IT."
-dialogBannerImage="https://resources.jwainfrastructure.com/img/pdx-dark.png"
+dialogBannerImage="https://resources.jwainfrastructure.com/img/pdx-monochrome.png"
 
 
 dialogCommandFile="/var/tmp/dialog.log"
