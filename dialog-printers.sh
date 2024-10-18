@@ -22,7 +22,8 @@ function dialog_command(){
 
 #consistent Dialog variables
 dialogIcon="https://resources.jwainfrastructure.com/icns/qgis-styled.icns"
-dialogBannerImage="https://resources.jwainfrastructure.com/img/qgis-banner.png"
+icon="SF=printer.fill"
+dialogBannerImage="https://resources.jwainfrastructure.com/img/engin-akyurt-CGnoRQZGWmw-unsplash.jpg"
 
 driverURL="https://www.support.xerox.com/en-us/product/versalink-c7020-c7025-c7030/downloads?platform=macOS14&category=&language=en&attributeId="
 
@@ -33,3 +34,24 @@ dialogBannerTitleA="Installing printer drivers"
 dialogButton1TextA="Installing printer drivers"
 
 
+if [ -d "$app_path_1" ]; then
+    echo "QGIS_LTR is installed."
+
+    sleep 0.1
+
+    "$dialogPath" \
+    --title "$dialogTitleB" \
+    --message "$dialogMessageB" \
+    --icon "$dialogIcon" \
+    --bannerimage "$dialogBannerImage" \
+    --bannerheight 85 \
+    --bannertitle "$dialogBannerTitle2" \
+    --button1text "$dialogButton1TextB" \
+    --infobuttontext "Advanced installation" \
+    --infobuttonaction "https://qgis.org/download" \
+    --button2text "Cancel" \
+    --iconalpha 1.0 \
+    --width 700 \
+    --messagefont "size=18" \
+    --height 505 \
+    --iconsize 120 \
