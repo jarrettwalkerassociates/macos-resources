@@ -30,6 +30,7 @@ button1text="Continue"
     --infobox "$dialogInfoBoxContent" \
     --infotext "$dialogInfoText" \
     --bannerimage "$dialogBannerImage" \
+    --bannerheight 85 \
     --iconalpha 1.0 \
     --ontop "true" \
     --button1text "$button1text" \
