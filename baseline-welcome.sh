@@ -37,6 +37,7 @@ button1text="Continue"
     --timer 30 \
     --hidetimerbar \
     --height 50% \
+    --blurscreen \
     
     #Very important that this part comes immediately after the dialog command
     dialogResults=$?
