@@ -21,7 +21,7 @@ echo "Disabling printer sharing"
 
 # CIS 2.3.3.11 Disable Bluetooth Sharing
 echo "Disabling Bluetooth sharing"
-/usr/bin/sudo -u "$CURRENT_USER" /usr/bin/defaults -currentHost write com.apple.Bluetooth PrefKeyServicesEnabled -bool false
+/usr/bin/defaults -currentHost write com.apple.Bluetooth PrefKeyServicesEnabled -bool false
 
 # CIS 2.3.3.8 Disable Internet Sharing
 echo "confirm internet sharing status"
@@ -52,11 +52,19 @@ done
 unset IFS
 
 # CIS 2.11.1 Remove password hint from user accounts 
+echo "Removing password hint from user accounts"
 for u in $(/usr/bin/dscl . -list /Users UniqueID | /usr/bin/awk '$2 > 500 {print $1}'); do
   /usr/bin/dscl . -delete /Users/$u hint
 done
 
 # CIS 3.3 Configure install.log Retention to 365 days
+echo "Configuring install log length"
 /usr/bin/sed -i '' "s/\* file \/var\/log\/install.log.*/\* file \/var\/log\/install.log format='\$\(\(Time\)\(JZ\)\) \$Host \$\(Sender\)\[\$\(PID\\)\]: \$Message' rotate=utc compress file_max=50M size_only ttl=365/g" /etc/asl/com.apple.install
+
+# CIS 2.9.3 Disable Wake For Network Access
+/usr/bin/pmset -a womp 0
+
+# CIS 5.7 Disable login to other users active sessions
+/usr/bin/security authorizationdb write system.login.screensaver "$ODV"
 
 exit
