@@ -64,7 +64,4 @@ echo "Configuring install log length"
 # CIS 2.9.3 Disable Wake For Network Access
 /usr/bin/pmset -a womp 0
 
-# CIS 5.7 Disable login to other users active sessions
-/usr/bin/security authorizationdb write system.login.screensaver "$ODV"
-
 exit
