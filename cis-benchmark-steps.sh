@@ -1,4 +1,6 @@
 #!/bin/bash
+
+set -x
 # script for setting some of the CIS benchmarks during enrollment.
 
 # setting log file
