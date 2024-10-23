@@ -47,6 +47,7 @@ echo "Confirming ability to log in as root disabled"
 /usr/bin/dscl . -read /Users/root UserShell 2>&1 | /usr/bin/grep -c "/usr/bin/false"
 
 # CIS 5.1.1 Secure users home folders
+echo "Securing user home folders"
 IFS=$'\n'
 for userDirs in $( /usr/bin/find /System/Volumes/Data/Users -mindepth 1 -maxdepth 1 -type d ! \( -perm 700 -o -perm 711 \) | /usr/bin/grep -v "Shared" | /usr/bin/grep -v "Guest" ); do
   /bin/chmod og-rwx "$userDirs"
@@ -64,6 +65,9 @@ echo "Configuring install log length"
 /usr/bin/sed -i '' "s/\* file \/var\/log\/install.log.*/\* file \/var\/log\/install.log format='\$\(\(Time\)\(JZ\)\) \$Host \$\(Sender\)\[\$\(PID\\)\]: \$Message' rotate=utc compress file_max=50M size_only ttl=365/g" /etc/asl/com.apple.install
 
 # CIS 2.9.3 Disable Wake For Network Access
+echo "Disabling Wake for Network Access"
 /usr/bin/pmset -a womp 0
 
 exit
+
+echo 0
