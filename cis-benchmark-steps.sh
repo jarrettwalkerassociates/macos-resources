@@ -27,17 +27,20 @@ echo "Disabling Bluetooth sharing"
 
 # CIS 2.3.3.8 Disable Internet Sharing
 echo "confirm internet sharing status"
-/usr/bin/sudo /usr/bin/defaults read /Library/Preferences/SystemConfiguration/com.apple.nat >nul 2>&1 | grep -c "Enabled = 1;"
+/usr/bin/defaults read /Library/Preferences/SystemConfiguration/com.apple.nat >nul 2>&1 | grep -c "Enabled = 1;"
+
+# CIS 2.12.2 Disable Guest Access To Shared SMB Folders
+/usr/sbin/sysadminctl -smbGuestAccess off
 
 # CIS 4.3 Disable Network File System Service
 echo "Disabling NFS"
 /bin/launchctl disable system/com.apple.nfsd
-/usr/bin/sudo /bin/rm /etc/exports
+/bin/rm /etc/exports
 
 ## macOS Settings
 # CIS 5.1.2 Enable System Integrity Protection
 echo "Confirming SIP status"
-/usr/bin/sudo /usr/bin/csrutil status
+/usr/bin/csrutil status
 
 # CIS 5.6 Disable root login
 echo "Confirming ability to log in as root"
@@ -71,3 +74,4 @@ echo "Disabling Wake for Network Access"
 exit
 
 echo 0
+
