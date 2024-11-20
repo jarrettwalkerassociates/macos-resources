@@ -1643,6 +1643,10 @@ get_mdm(){
 			log_info "MDM is Intune"
 			mdmName="Microsoft Intune"
 		;;
+        *mosyle*)
+		log_info "MDM is Mosyle"
+		mdmName="Mosyle"
+		;;
 		*)
 			log_info "Unsure of MDM"
 		;;
