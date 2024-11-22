@@ -26,14 +26,6 @@ removeFromDock() {
 		runAsUser /usr/local/bin/dockutil --remove "$@" --allhomes /Users/$currentUser > /dev/null 2>&1 || true
 }
 
-
-addToDock "/Applications/Microsoft Word.app"
-addToDock "/Applications/Microsoft Excel.app"
-addToDock "/Applications/Microsoft PowerPoint.app"
-addToDock "/Applications/Self-Service.app"
-addToDock "/Applications/1Password.app"
-addToDockEnd "/Applications/Privileges.app"
-
 removeFromDock "/System/Applications/Music.app"
 removeFromDock "/System/Applications/News.app"
 removeFromDock "/System/Applications/TV.app"
@@ -41,7 +33,15 @@ removeFromDock "/System/Applications/Messages.app"
 removeFromDock "/System/Applications/FaceTime.app"
 removeFromDock "/System/Applications/FaceTime.app"
 removeFromDock "/System/Applications/Photos.app"
+removeFromDock "/System/Applications/iPhone Mirroring.app"
 removeFromDock "/Applications/Photos.app"
 removeFromDock "/System/Applications/Freeform.app"
+
+addToDock "/Applications/Microsoft Word.app"
+addToDock "/Applications/Microsoft Excel.app"
+addToDock "/Applications/Microsoft PowerPoint.app"
+addToDock "/Applications/Self-Service.app"
+addToDock "/Applications/1Password.app"
+addToDockEnd "/Applications/Privileges.app"
 
 exit
