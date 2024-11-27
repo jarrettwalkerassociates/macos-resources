@@ -50,12 +50,12 @@ echo "Confirming ability to log in as root disabled"
 /usr/bin/dscl . -read /Users/root UserShell 2>&1 | /usr/bin/grep -c "/usr/bin/false"
 
 # CIS 5.1.1 Secure users home folders
-echo "Securing user home folders"
-IFS=$'\n'
-for userDirs in $( /usr/bin/find /System/Volumes/Data/Users -mindepth 1 -maxdepth 1 -type d ! \( -perm 700 -o -perm 711 \) | /usr/bin/grep -v "Shared" | /usr/bin/grep -v "Guest" ); do
-  /bin/chmod og-rwx "$userDirs"
-done
-unset IFS
+# echo "Securing user home folders"
+# IFS=$'\n'
+# for userDirs in $( /usr/bin/find /System/Volumes/Data/Users -mindepth 1 -maxdepth 1 -type d ! \( -perm 700 -o -perm 711 \) | /usr/bin/grep -v "Shared" | /usr/bin/grep -v "Guest" ); do
+#   /bin/chmod og-rwx "$userDirs"
+# done
+# unset IFS
 
 # CIS 2.11.1 Remove password hint from user accounts 
 echo "Removing password hint from user accounts"
