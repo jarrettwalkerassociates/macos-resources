@@ -8,7 +8,7 @@
 #
 # HISTORY
 #
-#   Version 3.0.0-beta4, [11.14.2024]
+#   Version 3.0.0-beta5, [12.16.2024]
 #
 #
 ####################################################################################################
@@ -23,8 +23,8 @@
 # Script Version and Variables
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-scriptVersion="3.0.0-beta4"
-scriptDate="2024/11/14"
+scriptVersion="3.0.0-beta5"
+scriptDate="2024/12/16"
 scriptFunctionalName="App Auto-Patch"
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin
 
@@ -78,6 +78,8 @@ echo "
     [--debug-mode] [--debug-mode-off]
     [--usage] [--help]
     [--uninstall]
+    [--version]
+    [--vers]
 
 "
 # Error log any unrecognized options.
@@ -110,6 +112,22 @@ show_help() {
 
 }
 
+show_version() {
+echo "
+    App Auto-Patch
+
+    Version ${scriptVersion}
+    ${scriptDate}
+    https://github.com/App-Auto-Patch
+"
+exit 0
+}
+
+show_version_short() {
+    echo "${scriptVersion}"
+    exit 0
+}
+
 ### App Auto-Patch Path Variables ###
 ### MDM Enabled Config Noted Below ##
 
@@ -131,7 +149,7 @@ set_defaults() {
 
     appAutoPatchPIDfile="/var/run/aap.pid"
 
-    interactiveMode="1" # MDM Enabled
+    interactiveMode="2" # MDM Enabled
 
     installomatorPath="${appAutoPatchFolder}/Installomator"
 
@@ -144,6 +162,8 @@ set_defaults() {
     ignoreAppsInHomeFolder="FALSE" # MDM Enabled
 
     installomatorOptions="BLOCKING_PROCESS_ACTION=prompt_user NOTIFY=silent LOGO=mosyleb" # MDM Enabled
+
+    installomatorVersion="Main" # MDM Enabled - Use:  Release|Main 
 
     deferralTimer="300" # MDM Enabled
     
@@ -177,6 +197,8 @@ set_defaults() {
 
     dialogTargetVersion="2.4.0"
 
+    dialogOnTop="FALSE" # MDM Enabled
+
     reset_defaults_option="FALSE"
 
     useOverlayIcon="TRUE" # MDM Enabled
@@ -191,11 +213,11 @@ set_defaults() {
     
     REGEX_CSV_WHOLE_NUMBERS="^[0-9*,]+$"
 
-    supportTeamName="Add IT Support" # MDM Enabled
+    supportTeamName="IT Support" # MDM Enabled
 
     supportTeamPhone="Add IT Phone Number" # MDM Enabled
 
-    supportTeamEmail="Add email" # MDM Enabled
+    supportTeamEmail="" # MDM Enabled
 
     supportTeamWebsite="Add IT Help site" # MDM Enabled
 
@@ -335,6 +357,12 @@ get_options() {
             --uninstall)
                 uninstall_app_auto_patch
             ;;
+            --version)
+                show_version
+            ;;
+            --vers)
+                show_version_short
+            ;;
             *)
                 unrecognized_options_array+=("$1")
             ;;  
@@ -420,6 +448,8 @@ get_preferences() {
         ignore_apps_in_home_folder_managed=$(defaults read "${appAutoPatchManagedPLIST}" IgnoreAppsInHomeFolder 2> /dev/null)
         local installomator_options_managed
         installomator_options_managed=$(defaults read "${appAutoPatchManagedPLIST}" InstallomatorOptions 2> /dev/null)
+        local installomator_version_managed
+        installomator_version_managed=$(defaults read "${appAutoPatchManagedPLIST}" InstallomatorVersion 2> /dev/null)
         local deferral_timer_managed
         deferral_timer_managed=$(defaults read "${appAutoPatchManagedPLIST}" DeferralTimer 2> /dev/null)
         local deferral_timer_action_managed
@@ -430,6 +460,8 @@ get_preferences() {
         unattended_exit_managed=$(defaults read "${appAutoPatchManagedPLIST}" UnattendedExit 2> /dev/null)
         local unattended_exit_seconds_managed
         unattended_exit_seconds_managed=$(defaults read "${appAutoPatchManagedPLIST}" UnattendedExitSeconds 2> /dev/null)
+        local dialog_on_top_managed
+        dialog_on_top_managed=$(defaults read "${appAutoPatchManagedPLIST}" DialogOnTop 2> /dev/null)
         local use_overlay_icon_managed
         use_overlay_icon_managed=$(defaults read "${appAutoPatchManagedPLIST}" UseOverlayIcon 2> /dev/null)
         local remove_installomator_path_managed
@@ -489,6 +521,8 @@ get_preferences() {
         ignore_apps_in_home_folder_local=$(defaults read "${appAutoPatchLocalPLIST}" IgnoreAppsInHomeFolder 2> /dev/null)
         local installomator_options_local
         installomator_options_local=$(defaults read "${appAutoPatchLocalPLIST}" InstallomatorOptions 2> /dev/null)
+        local installomator_version_local
+        installomator_version_local=$(defaults read "${appAutoPatchLocalPLIST}" InstallomatorVersion 2> /dev/null)
         local deferral_timer_local
         deferral_timer_local=$(defaults read "${appAutoPatchLocalPLIST}" DeferralTimer 2> /dev/null)
         local deferral_timer_action_local
@@ -499,6 +533,8 @@ get_preferences() {
         unattended_exit_local=$(defaults read "${appAutoPatchLocalPLIST}" UnattendedExit 2> /dev/null)
         local unattended_exit_seconds_local
         unattended_exit_seconds_local=$(defaults read "${appAutoPatchLocalPLIST}" UnattendedExitSeconds 2> /dev/null)
+        local dialog_on_top_local
+        dialog_on_top_local=$(defaults read "${appAutoPatchLocalPLIST}" DialogOnTop 2> /dev/null)
         local use_overlay_icon_local
         use_overlay_icon_local=$(defaults read "${appAutoPatchLocalPLIST}" UseOverlayIcon 2> /dev/null)
         local remove_installomator_path_local
@@ -556,6 +592,8 @@ get_preferences() {
     { [[ -z "${ignore_apps_in_home_folder_managed}" ]] && [[ -n "${ignoreAppsInHomeFolder}" ]] && [[ -n "${ignore_apps_in_home_folder_local}" ]]; } && ignoreAppsInHomeFolder="${ignore_apps_in_home_folder_local}"
     [[ -n "${installomator_options_managed}" ]] && installomatorOptions="${installomator_options_managed}"
     { [[ -z "${installomator_options_managed}" ]] && [[ -n "${installomatorOptions}" ]] && [[ -n "${installomator_options_local}" ]]; } && installomatorOptions="${installomator_options_local}"
+    [[ -n "${installomator_version_managed}" ]] && installomatorVersion="${installomator_version_managed}"
+    { [[ -z "${installomator_version_managed}" ]] && [[ -n "${installomatorVersion}" ]] && [[ -n "${installomator_version_local}" ]]; } && installomatorVersion="${installomator_version_local}"
     [[ -n "${deferral_timer_managed}" ]] && deferralTimer="${deferral_timer_managed}"
     { [[ -z "${deferral_timer_managed}" ]] && [[ -n "${deferralTimer}" ]] && [[ -n "${deferral_timer_local}" ]]; } && deferralTimer="${deferral_timer_local}"
     [[ -n "${deferral_timer_action_managed}" ]] && deferralTimerAction="${deferral_timer_action_managed}"
@@ -566,6 +604,8 @@ get_preferences() {
     { [[ -z "${unattended_exit_managed}" ]] && [[ -n "${unattendedExit}" ]] && [[ -n "${unattended_exit_local}" ]]; } && unattendedExit="${unattended_exit_local}"
     [[ -n "${unattended_exit_seconds_managed}" ]] && unattendedExitSeconds="${unattended_exit_seconds_managed}"
     { [[ -z "${unattended_exit_seconds_managed}" ]] && [[ -n "${unattendedExitSeconds}" ]] && [[ -n "${unattended_exit_seconds_local}" ]]; } && unattendedExitSeconds="${unattended_exit_seconds_local}"
+    [[ -n "${dialog_on_top_managed}" ]] && dialogOnTop="${dialog_on_top_managed}"
+    { [[ -z "${dialog_on_top_managed}" ]] && [[ -n "${dialogOnTop}" ]] && [[ -n "${dialog_on_top_local}" ]]; } && dialogOnTop="${dialog_on_top_local}"
     [[ -n "${use_overlay_icon_managed}" ]] && useOverlayIcon="${use_overlay_icon_managed}"
     { [[ -z "${use_overlay_icon_managed}" ]] && [[ -n "${useOverlayIcon}" ]] && [[ -n "${use_overlay_icon_local}" ]]; } && useOverlayIcon="${use_overlay_icon_local}"
     [[ -n "${remove_installomator_path_managed}" ]] && removeInstallomatorPath="${remove_installomator_path_managed}"
@@ -598,11 +638,13 @@ get_preferences() {
     log_verbose  "convertAppsInHomeFolder: $convertAppsInHomeFolder"
     log_verbose  "ignoreAppsInHomeFolder: $ignoreAppsInHomeFolder"
     log_verbose  "installomatorOptions: $installomatorOptions"
+    log_verbose  "installomatorVersion: $installomatorVersion"
     log_verbose  "deferralTimer: $deferralTimer"
     log_verbose  "deferralTimerAction: $deferralTimerAction"
     log_verbose  "daysUntilReset: $daysUntilReset"
     log_verbose  "unattendedExit: $unattendedExit"
     log_verbose  "unattendedExitSeconds: $unattendedExitSeconds"
+    log_verbose  "dialogOnTop: $dialogOnTop"
     log_verbose  "useOverlayIcon: $useOverlayIcon"
     log_verbose  "removeInstallomatorPath: $removeInstallomatorPath"
     log_verbose  "supportTeamName: $supportTeamName"
@@ -1051,9 +1093,6 @@ workflow_startup() {
 	aapCurrentFolder=$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")
 	! { [[ "${aapCurrentFolder}" == "${appAutoPatchFolder}" ]] || [[ "${aapCurrentFolder}" == $(dirname "${appAutoPatchLink}") ]]; } && install_app_auto_patch
 	
-    # Check for Installomator
-    get_installomator
-
     # Since swiftDialog and App Auto-Patch require at least macOS 12 Monterey, first confirm the major OS version
     if [[ "${osMajorVersion}" -ge 12 ]] ; then
         log_info "macOS ${osMajorVersion} installed; proceeding ..."
@@ -1154,6 +1193,9 @@ workflow_startup() {
 	
 	# Initial Parameter and helper validation, if any of these fail then it's unsafe for the workflow to continue.
 	get_preferences
+
+    # Check for Installomator
+    get_installomator
 
     # Management parameter options
     manage_parameter_options
@@ -1283,6 +1325,10 @@ workflow_startup() {
         --icon "$icon"
         --overlayicon "$overlayicon"
     )
+
+	if [[ "$dialogOnTop" == "TRUE" ]]; then
+		dialogPatchingConfigurationOptions+=(--ontop)
+	fi
     
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
     # "Discover" dialog Title, Message and Icon
@@ -1303,6 +1349,10 @@ workflow_startup() {
         --quitkey k
     )
     
+	if [[ "$dialogOnTop" == "TRUE" ]]; then
+		dialogDiscoverConfigurationOptions+=(--ontop)
+	fi
+
     #Running this function for something webhook related
     gather_error_log
 
@@ -1492,8 +1542,13 @@ get_installomator() {
     if ! [[ -f $installomatorScript ]]; then
         log_warning "Installomator was not found at $installomatorPath"
         log_info "Attempting to download Installomator.sh at $installomatorPath"
-
-        latestURL=$(curl -sSL -o - "https://api.github.com/repos/Installomator/Installomator/releases/latest" | grep tarball_url | awk '{gsub(/[",]/,"")}{print $2}')
+        if [[ "$installomatorVersion" == "Release" ]]; then
+            log_info "Attempting to download Installomator release version"
+            latestURL=$(curl -sSL -o - "https://api.github.com/repos/Installomator/Installomator/releases/latest" | grep tarball_url | awk '{gsub(/[",]/,"")}{print $2}')
+        else
+            log_info "Attempting to download Installomator main version"
+            latestURL="https://codeload.github.com/Installomator/Installomator/legacy.tar.gz/$(curl -sSL -o - "https://api.github.com/repos/Installomator/Installomator/branches" | grep -A2 "main" | tail -1 | cut -d'"' -f4)"
+        fi
 
         tarPath="$installomatorPath/installomator.latest.tar.gz"
 
@@ -1509,8 +1564,16 @@ get_installomator() {
         rm -rf $installomatorPath/*.tar.gz
     else
         log_notice "Installomator was found at $installomatorPath, checking version ..."
-        appNewVersion=$(curl -sLI "https://github.com/Installomator/Installomator/releases/latest" | grep -i "^location" | tr "/" "\n" | tail -1 | sed 's/[^0-9\.]//g')
-        appVersion="$(cat $fragmentsPath/version.sh)"
+        if [[ "$installomatorVersion" == "Release" ]]; then
+            appNewVersion=$(curl -sLI "https://github.com/Installomator/Installomator/releases/latest" | grep -i "^location" | tr "/" "\n" | tail -1 | sed 's/[^0-9\.]//g')
+            appVersion="$(cat $fragmentsPath/version.sh)"
+        else
+            appNewVersion="$(curl -sL "https://raw.githubusercontent.com/Installomator/Installomator/refs/heads/main/Installomator.sh" | grep VERSIONDATE= | cut -d'"' -f2)"
+            appVersion="$(cat "/Library/Management/AppAutoPatch/Installomator/Installomator.sh" | grep VERSIONDATE= | cut -d'"' -f2)"
+            # convert to epoch
+            appNewVersion=$(date -j -f "%Y-%m-%d" "${appNewVersion}" +%s)
+            appVersion=$(date -j -f "%Y-%m-%d" "${appVersion}" +%s)
+        fi
         if [[ ${appVersion} -lt ${appNewVersion} ]]; then
             log_error "Installomator is installed but is out of date. Versions before 10.0 function unpredictably with App Auto Patch."
             log_info "Removing previously installed Installomator version ($appVersion) and reinstalling with the latest version ($appNewVersion)"
@@ -1642,10 +1705,6 @@ get_mdm(){
 		*microsoft*)
 			log_info "MDM is Intune"
 			mdmName="Microsoft Intune"
-		;;
-        *mosyle*)
-		log_info "MDM is Mosyle"
-		mdmName="Mosyle"
 		;;
 		*)
 			log_info "Unsure of MDM"
@@ -2137,6 +2196,11 @@ dialog_install_or_defer() {
         --alwaysreturninput
 		--commandfile "$dialogCommandFile"
 	)
+
+	if [[ "$dialogOnTop" == "TRUE" ]]; then
+		deferralDialogOptions+=(--ontop)
+	fi
+
 	SELECTION=$("$dialogBinary" "${deferralDialogContent[@]}" "${deferralDialogOptions[@]}" "${appNamesArray[@]}")
 	dialogOutput=$?
 	
@@ -2204,6 +2268,11 @@ dialog_install_hard_deadline() {
 		--height $height
 		--commandfile "$dialogCommandFile"
 	)
+	
+	if [[ "$dialogOnTop" == "TRUE" ]]; then
+		deferralDialogOptions+=(--ontop)
+	fi
+
 	"$dialogBinary" "${deferralDialogContent[@]}" "${deferralDialogOptions[@]}" "${appNamesArray[@]}"
 	dialogOutput=$?
 	
