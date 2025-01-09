@@ -9,27 +9,25 @@ function dialog_command(){
 }
 
 dialogTitle="Change Cloudflare mode"
-dialogMessage="This tool is used to switch Cloudflare WARP modes for troubleshooting.  \n\n Use DNS-over-HTTPS mode if you're having trouble in the default mode."
-dialogIcon="SF=play.laptopcomputer,color=blue,weight=medium"
-dialogBannerImage="https://resources.jwainfrastructure.com/img/pdx-monochrome.png"
-
+dialogMessage="This tool is used to switch Cloudflare WARP modes for troubleshooting.  \n\n Use DNS-over-HTTPS (DoH) mode if you're having trouble connecting to certain networks.  \n\nOnce you're done, make sure to reset it to the standard WARP mode."
+dialogIcon="SF=cloud.fill,color=orange,weight=medium"
 
 dialogCommandFile="/var/tmp/dialog.log"
 
 # Button 1 Text
 button1text="Switch to DoH"
+button2text="Reset to WARP"
 
  "$dialogPath" \
     --title "$dialogTitle" \
     --message "$dialogMessage" \
     --icon "$dialogIcon" \
-    --centericon \
     --iconalpha 1.0 \
-    --ontop "true" \
     --button1text "$button1text" \
-    --height 50% \
-    --blurscreen \
-    --button1
+    --button2text "$button2text" \
+    --buttonstyle stack \
+    --width 600 \
+    --height 400 \
     
     #Very important that this part comes immediately after the dialog command
     dialogResults=$?
@@ -37,12 +35,13 @@ button1text="Switch to DoH"
     echo "Dialog exited with the following code: $dialogResults"
 
     if [ "$dialogResults" = 0 ]; then
-        echo "User selected continue, Baseline proceeding as normal"
         warp-cli mode doh
         echo "WARP mode changed to DoH"
 
-    elif [ "$dialogResults" = 4 ]; then
-        echo "Timer ran out, Baseline proceeding as normal"
+    elif [ "$dialogResults" = 2 ]; then
+        warp-cli mode warp+doh
+        echo "WARP mode changed to WARP+DoH"
+
     elif [ "$dialogResults" = 10 ]; then
         echo "Exit key was used - user was prompted to exit."
     else
